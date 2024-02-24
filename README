@@ -1,0 +1,45 @@
+This repo holds the necessary manifests to create a k8s cluster and enable GitOps
+
+Make sure you have `Docker` installed
+
+Install k3d and create a new cluster
+
+```shell
+k3d cluster create dev \
+--api-port 6443 \
+-p 8080:80@loadbalancer \
+-p 8443:443@loadbalancer \
+--agents 3 \
+--k3s-arg "--disable=traefik@server:0"
+```
+
+> at least 3 nodes are necessary to install argo with HA
+
+Create the necessary infra for ArgoCD:
+
+```shell
+kubectl apply -k infra/argocd/src
+```
+
+> if you need another version of argocd please update [this](./infra/argocd/src/kustomization.yaml) file with the link of the yaml manifest at the version you want.
+
+Install argocd cli:
+
+```shell
+VERSION=<TAG> # Select desired TAG from https://github.com/argoproj/argo-cd/releases
+curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/download/$VERSION/argocd-linux-amd64
+sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+rm argocd-linux-amd64
+```
+
+Kustomize might also be helpful to get a view of the manifest resulting from multiple overlays and debuging so let's install it:
+
+```shell
+curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+```
+
+Get Argocd initial password:
+
+```shell
+argocd admin initial-password -n argocd
+```
