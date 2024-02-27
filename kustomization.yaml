@@ -1,4 +1,8 @@
 resources:
   - infra/argocd/base
-  - infra/argocd/overlays
+  # - infra/argocd/overlays
   - apps
+
+## changes to config maps
+patches:
+  - path: infra/argocd/overlays/argocd-cmd-params-cm.yaml

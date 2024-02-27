@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-app
+  name: nginx-app
 spec:
   destination:
     name: ""
     namespace: default
     server: "https://kubernetes.default.svc"
   source:
-    path: base/default/nginx
+    path: base/default
     repoURL: "https://github.com/rodrigoscferraz/argocd-gitops"
     targetRevision: HEAD
   project: default
