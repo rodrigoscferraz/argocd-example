@@ -1,6 +1,9 @@
-# apiVersion: kustomize.config.k8s.io/v1beta1
-# kind: Kustomization
-namespace: argocd
+# Installs argocd v2.10.1 in HA
 
+namespace: argocd
 resources:
-  - ns.yaml
+  - argocd-ns.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-cd/v2.10.1/manifests/ha/install.yaml
+  - argocd-root-app.yaml
+  - root-repository.yaml
+  - ingress.yaml

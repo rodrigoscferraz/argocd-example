@@ -1,0 +1,4 @@
+resources:
+  - infra/argocd/base
+  - infra/argocd/overlays
+  - apps
