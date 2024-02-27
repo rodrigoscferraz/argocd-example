@@ -1,6 +1,2 @@
 resources:
   - ../base
-
-## changes to config maps
-patches:
-  - path: ../overlays/argocd-cmd-params-cm.yaml
