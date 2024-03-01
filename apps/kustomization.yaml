@@ -1,4 +1,3 @@
 resources:
   - furiko/manifest.yaml
   - default/nginx-application/manifest.yaml
-  # - https://github.com/furiko-io/furiko/releases/latest/download/furiko-execution.yaml
