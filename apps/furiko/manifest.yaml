@@ -1,20 +1,23 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: nginx-app
+  name: furiko
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
     name: ""
-    namespace: argocd
+    namespace: furiko
     server: "https://kubernetes.default.svc"
   source:
-    path: base/default
-    repoURL: "https://github.com/rodrigoscferraz/argocd-gitops"
+    path:
+    repoURL: "https://github.com/furiko-io/furiko/releases/latest/download/furiko-execution.yaml"
     targetRevision: HEAD
   project: default
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
