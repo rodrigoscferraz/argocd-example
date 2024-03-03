@@ -11,6 +11,9 @@ metadata:
 spec:
   project: default
   syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
     syncOptions:
       - CreateNamespace=true
       - PrunePropagationPolicy=foreground
@@ -425,10 +428,3 @@ spec:
   destination:
     server: "https://kubernetes.default.svc"
     namespace: observability
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - PrunePropagationPolicy=foreground
