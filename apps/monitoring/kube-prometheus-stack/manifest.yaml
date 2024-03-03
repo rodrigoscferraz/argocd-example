@@ -17,6 +17,7 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - PrunePropagationPolicy=foreground
+      - Replace=true # necessary due to huge CRD https://github.com/argoproj/argo-cd/issues/8128
 
   source:
     chart: kube-prometheus-stack
