@@ -2,3 +2,4 @@ resources:
   - furiko/manifest.yaml
   - default/nginx-application/manifest.yaml
   - monitoring/kube-prometheus-stack/manifest.yaml
+  - data/manifest.yaml
