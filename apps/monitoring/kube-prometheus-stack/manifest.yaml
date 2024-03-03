@@ -39,9 +39,9 @@ spec:
           #     memory: 384Mi
           #     cpu: 100m
 
-          serviceMonitor:
-            labels:
-              prometheus.io/scrap-with: kube-prometheus-stack
+          # serviceMonitor:
+          #   labels:
+          #     prometheus.io/scrap-with: kube-prometheus-stack
 
           # ingress:
           #   enabled: true
