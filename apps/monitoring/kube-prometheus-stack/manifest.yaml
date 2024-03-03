@@ -18,7 +18,6 @@ spec:
       - CreateNamespace=true
       - PrunePropagationPolicy=foreground
       - ServerSideApply=true
-      - Replace=true # necessary due to huge CRD https://github.com/argoproj/argo-cd/issues/8128
       - PruneLast=true # Necessary due to some resources that are created dinamically and not by th ehelm chart https://github.com/prometheus-community/helm-charts/issues/2196#issuecomment-1713701019
 
   source:
