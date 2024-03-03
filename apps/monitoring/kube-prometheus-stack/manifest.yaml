@@ -1,0 +1,427 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kube-prometheus-stack
+  namespace: argocd
+
+  # Add this finalizer ONLY if you want these to cascade delete (A cascade delete, deletes both the app and its resources, rather than only the app.)
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+
+  source:
+    chart: kube-prometheus-stack
+    repoURL: "https://prometheus-community.github.io/helm-charts"
+    targetRevision: 56.19.0
+    # https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-prometheus-stack/values.yaml
+    helm:
+      # skipCrds: true
+      valuesObject:
+        fullnameOverride: "kube-prometheus-stack"
+
+        ## Grafana ##
+        # grafana:
+        #   fullnameOverride: grafana
+        #   image:
+        #     tag: 10.3.3
+
+          # resources:
+          #   requests:
+          #     memory: 128Mi
+          #     cpu: 50m
+          #   limits:
+          #     memory: 384Mi
+          #     cpu: 100m
+
+          serviceMonitor:
+            labels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+          # ingress:
+          #   enabled: true
+          #   ingressClassName: nginx
+          #   hosts:
+          #     - grafana${ARGOCD_ENV_DNS_ENV}.${ARGOCD_ENV_DNS_DOMAIN}
+
+          # Configuration
+          adminUser: admin
+          adminPassword: password
+          # grafana.ini:
+          #   # nestedFolders -> not used for now has it break sidecar folders.
+          #   feature_toggles:
+          #     enable: traceToMetrics metricsSummary correlations lokiFormatQuery lokiQuerySplitting lokiExperimentalStreaming logsExploreTableVisualisation scenes extraThemes featureToggleAdminPage panelTitleSearch dataSourcePageHeader dashgpt enableNativeHTTPHistogram httpSLOLevels
+
+          # Dashboards configurations
+          defaultDashboardsTimezone: browser
+          # dashboardProviders:
+          #   dashboardproviders.yaml:
+          #     apiVersion: 1
+          #     providers:
+          #       - name: "grafana-dashboards-kubernetes"
+          #         orgId: 1
+          #         folder: "Kubernetes-v2"
+          #         type: file
+          #         options:
+          #           path: /var/lib/grafana/dashboards/grafana-dashboards-kubernetes
+          # dashboards:
+          #   grafana-dashboards-kubernetes:
+          #     k8s-views-global:
+          #       url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-global.json
+          #     k8s-views-namespaces:
+          #       url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-namespaces.json
+          #     k8s-views-nodes:
+          #       url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-nodes.json
+          #     k8s-views-pods:
+          #       url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-pods.json
+
+          # sidecar:
+          #   dashboards:
+          #     enabled: true
+          #     folderAnnotation: grafana_folder
+          #     provider:
+          #       foldersFromFilesStructure: true
+          #     label: grafana_dashboard
+          #     annotations:
+          #       grafana_folder: /tmp/dashboards/Kubernetes
+          #   datasources:
+          #     exemplarTraceIdDestinations:
+          #       datasourceUid: tempo
+          #       traceIdLabelName: trace_id
+
+          # additionalDataSources:
+          #   # More config at https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/
+          #   - name: Tempo
+          #     uid: tempo
+          #     type: tempo
+          #     access: proxy
+          #     url: http://tempo.observability.svc:3100
+          #     jsonData:
+          #       # tracesToLogsV2:
+          #       #   datasourceUid: 'loki'
+          #       #   spanStartTimeShift: '1h'
+          #       #   spanEndTimeShift: '-1h'
+          #       #   tags: [{ key: 'service.name', value: 'app' }]
+          #       #   filterByTraceID: false
+          #       #   filterBySpanID: false
+          #       #   customQuery: true
+          #       #   query: '{$$$${__tags}} |="$$$${__span.traceId}"'
+          #       tracesToMetrics:
+          #         datasourceUid: "prometheus"
+          #         spanStartTimeShift: "1h"
+          #         spanEndTimeShift: "-1h"
+          #         tags: [{ key: "service.name", value: "service" }]
+          #         queries:
+          #           - name: "latency"
+          #             query: "sum(rate(traces_spanmetrics_latency_bucket{$$__tags}[5m]))"
+          #       serviceMap:
+          #         datasourceUid: "prometheus"
+          #       nodeGraph:
+          #         enabled: true
+          #       search:
+          #         hide: false
+          #       # lokiSearch:
+          #       #   datasourceUid: 'loki'
+          #       traceQuery:
+          #         timeShiftEnabled: true
+          #         spanStartTimeShift: "1h"
+          #         spanEndTimeShift: "-1h"
+          #       spanBar:
+          #         type: "Tag"
+          #         # tag: 'None'
+          #         tag: "http.path"
+
+            # - name: Loki
+            #   uid: loki
+            #   type: loki
+            #   access: proxy
+            #   url: http://loki-gateway.observability.svc
+            #   jsonData:
+            #     timeout: 1200
+            #     derivedFields:
+            #       - datasourceName: Tempo
+            #         datasourceUid: tempo
+            #         matcherRegex: ([A-Za-z0-9]{32})
+            #         name: TraceId
+            #         url: "$$$${__value.raw}"
+            #         urlDisplayLabel: 'View Trace'
+
+            # - name: Pyroscope
+            #   uid: pyroscope
+            #   type: grafana-pyroscope-datasource
+            #   url: http://pyroscope.observability.svc:4040
+
+        ## Prometheus ##
+        prometheus:
+          serviceMonitor:
+            additionalLabels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+          podDisruptionBudget:
+            enabled: true
+
+          # ingress:
+          #   enabled: true
+          #   ingressClassName: nginx
+          #   hosts:
+          #     - prometheus${ARGOCD_ENV_DNS_ENV}.${ARGOCD_ENV_DNS_DOMAIN}
+
+          prometheusSpec:
+            # externalUrl: http://prometheus${ARGOCD_ENV_DNS_ENV}.${ARGOCD_ENV_DNS_DOMAIN}
+            retention: "30d"
+            storageSpec:
+              volumeClaimTemplate:
+                spec:
+                  # storageClassName: standard-rwo
+                  accessModes:
+                    - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 1Gi
+
+            # Necessary if using Otel collector.
+            enableRemoteWriteReceiver: true
+            enableFeatures:
+              - exemplar-storage
+              - otlp-write-receiver # /api/v1/otlp
+
+            ## Prometheus CRD Selectors ##
+            ruleSelectorNilUsesHelmValues: false
+            ruleSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+            serviceMonitorSelectorNilUsesHelmValues: false
+            serviceMonitorSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+            podMonitorNamespaceSelector: false
+            podMonitorSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+            probeSelectorNilUsesHelmValues: false
+            probeSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+            scrapeConfigSelectorNilUsesHelmValues: false
+            scrapeConfigSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+            alertmanagerConfigSelector:
+              matchLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+        prometheusOperator:
+          # resources:
+          #   requests:
+          #     memory: 512Mi
+          #     cpu: 100m
+          #   limits:
+          #     memory: 1.5Gi
+          #     cpu: 200m
+
+          serviceMonitor:
+            additionalLabels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+        ## Alertmanager ##
+        alertmanager:
+          # resources:
+          #   requests:
+          #     memory: 64Mi
+          #     cpu: 50m
+          #   limits:
+          #     memory: 128Mi
+          #     cpu: 100m
+
+          serviceMonitor:
+            additionalLabels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+          # ingress:
+          #   enabled: true
+          #   ingressClassName: nginx
+          #   hosts:
+          #     - alertmanager${ARGOCD_ENV_DNS_ENV}.${ARGOCD_ENV_DNS_DOMAIN}
+          alertmanagerSpec:
+            retention: "720h" # 30 days
+            # externalUrl: http://alertmanager${ARGOCD_ENV_DNS_ENV}.${ARGOCD_ENV_DNS_DOMAIN}
+            storage:
+              volumeClaimTemplate:
+                spec:
+                  # storageClassName: standard-rwo
+                  accessModes:
+                    - ReadWriteOnce
+                  resources:
+                    requests:
+                      storage: 1Gi
+
+          config:
+            global:
+              resolve_timeout: 5m
+              # slack_api_url: "https://hooks.slack.com/services/T5BG38LNS/fake-url"
+            # route:
+            #   group_by: ["job"]
+            #   group_wait: 10s
+            #   group_interval: 30s
+            #   repeat_interval: 12h
+            #   receiver: "slack"
+            #   routes:
+            #     - receiver: "null"
+            #       matchers:
+            #         - alertname = Watchdog
+            #     - receiver: "slack"
+            #       matchers:
+            #         - severity = info|critical|warning
+            #       continue: true
+            # receivers:
+            #   - name: "null"
+            #   - name: slack
+            #     slack_configs:
+            #       - send_resolved: true
+            #         channel: "#danger-room-sandbox"
+            #         icon_url: https://avatars3.githubusercontent.com/u/3380462
+            #         title: |
+            #           [{{ .Status | toUpper -}}
+            #           {{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{- end -}}
+            #           ] {{ .CommonLabels.alertname }}
+            #         text: |-
+            #           {{ range .Alerts -}}
+            #           *Severity:* `{{ .Labels.severity }}`
+            #           *Description:* {{ .Annotations.description }}
+            #           *Details:*
+            #              • *env:* `${ARGOCD_ENV_ENV}`
+            #             {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+            #             {{ end }}
+            #           {{ end }}
+
+            #         actions:
+            #           # TODO: add in the future: log_url, dashboard_url, runbook_url
+
+            #           - type: button
+            #             text: "Runbook :green_book:"
+            #             url: "{{ (index .Alerts 0).Annotations.runbook_url }}"
+            #           - type: button
+            #             text: "Query :mag:"
+            #             url: "{{ (index .Alerts 0).GeneratorURL }}"
+            #           - type: button
+            #             text: "Silence :no_bell:"
+            #             url: |
+            #               {{ .ExternalURL }}/#/silences/new?filter=%7B
+            #               {{- range .CommonLabels.SortedPairs -}}
+            #                   {{- if ne .Name "alertname" -}}
+            #                       {{- .Name }}%3D"{{- .Value -}}"%2C%20
+            #                   {{- end -}}
+            #               {{- end -}}
+            #               alertname%3D"{{- .CommonLabels.alertname -}}"%7D
+
+        ## Stack ##
+
+        # type: Daemonset -> collects metrics from the host system
+        prometheus-node-exporter:
+          fullnameOverride: prometheus-node-exporter
+
+          # resources:
+          #   requests:
+          #     memory: 32Mi
+          #     cpu: 60m
+          #   limits:
+          #     memory: 64Mi
+          #     cpu: 120m
+
+          prometheus:
+            monitor:
+              additionalLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+        # type: Deployment -> Listens to the Kubernetes API server and generates metrics about the state of the objects such as deployments, nodes and pods.
+        kube-state-metrics:
+          fullnameOverride: kube-state-metrics
+
+          # resources:
+          #   requests:
+          #     memory: 32Mi
+          #     cpu: 25m
+          #   limits:
+          #     memory: 64Mi
+          #     cpu: 50m
+
+          prometheus:
+            monitor:
+              additionalLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
+
+        ## Node component ## Controle plane https://kubernetes.io/docs/concepts/overview/components/#control-plane-components ##  ##
+
+        # Manage deployment of pods to Kubernetes nodes. It receives commands from the API server and instructs the container runtime to start/stop containers
+        # It pulls node, pod, and container metrics
+        kubelet:
+          enabled: true
+          serviceMonitor:
+            additionalLabels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+        # Network proxy that runs on each node, it maintains network rules on nodes.
+        # Depending on managed provider can be accessed or not.
+        kubeProxy:
+          enabled: false
+          serviceMonitor:
+            additionalLabels:
+              prometheus.io/scrap-with: kube-prometheus-stack
+
+        ## Controle plane https://kubernetes.io/docs/concepts/overview/components/#control-plane-components ##
+        ## k3s https://docs.k3s.io/installation/requirements#inbound-rules-for-k3s-server-nodes ##
+
+        # kubernetes API
+        kubeApiServer:
+          # k3s: sudo curl --insecure https://localhost:6443/metrics --cacert /var/lib/rancher/k3s/server/tls/server-ca.crt --cert /var/lib/rancher/k3s/server/tls/client-admin.crt --key /var/lib/rancher/k3s/server/tls/client-admin.key
+          enabled: false
+
+        # Runs controller processes, helps maintain the desired state of resources and reacts to changes in the cluster, ensuring that the actual state aligns with the declared configuration.
+        kubeControllerManager:
+          # k3s: sudo curl --insecure https://localhost:10257/metrics --cacert /var/lib/rancher/k3s/server/tls/server-ca.crt --cert /var/lib/rancher/k3s/server/tls/client-admin.crt --key /var/lib/rancher/k3s/server/tls/client-admin.key
+          enabled: false
+
+        # Watches for newly created Pods with no assigned node, and selects a node for them to run on.
+        kubeScheduler:
+          # k3s: sudo curl --insecure https://localhost:10259/metrics --cacert /var/lib/rancher/k3s/server/tls/server-ca.crt --cert /var/lib/rancher/k3s/server/tls/client-admin.crt --key /var/lib/rancher/k3s/server/tls/client-admin.key
+          enabled: false
+
+        coreDns:
+          enabled: false
+        kubeDns:
+          enabled: false
+        kubeEtcd:
+          enabled: false
+
+        defaultRules:
+          labels:
+            prometheus.io/scrap-with: kube-prometheus-stack
+
+          # Keep all rules by default.
+          rules:
+            # disable components that are not exposed in managed environment.
+            kubeApiserverAvailability: false
+            kubeApiserverBurnrate: false
+            kubeApiserverHistogram: false
+            kubeApiserverSlos: false
+            etcd: false
+            kubeControllerManager: false
+            kubeSchedulerAlerting: false
+            kubeSchedulerRecording: false
+
+          disabled:
+            InfoInhibitor: true
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: observability
