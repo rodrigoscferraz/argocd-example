@@ -19,7 +19,7 @@ k3d cluster create argocd-cp \
 -p 8080:80@loadbalancer \
 -p 8443:443@loadbalancer \
 --agents 3
-# --k3s-arg "--disable=traefik@server:0"
+--k3s-arg "--disable=traefik@server:0"
 ```
 
 > at least 3 nodes are necessary to install argo with HA

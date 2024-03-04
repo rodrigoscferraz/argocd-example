@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+
+  # Add this finalizer ONLY if you want these to cascade delete (A cascade delete, deletes both the app and its resources, rather than only the app.)
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - ServerSideApply=true # Necessary due to some resources that are created dinamically and not by th ehelm chart https://github.com/prometheus-community/helm-charts/issues/2196#issuecomment-1713701019
+      - PruneLast=true # Necessary due to some resources that are created dinamically and not by th ehelm chart https://github.com/prometheus-community/helm-charts/issues/2196#issuecomment-1713701019
+
+  source:
+    chart: traefik
+    repoURL: "https://traefik.github.io/charts"
+    targetRevision: 26.1.0
+    # https://github.com/traefik/traefik-helm-chart/blob/645fbae55c013870c26fd7fcfecf909465ca0e76/traefik/values.yaml#L1
+    helm:
+      # skipCrds: true
+      valuesObject:
+        deployment:
+          labels: "prometheus.io/scrap-with: kube-prometheus-stack"
+
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: traefik
