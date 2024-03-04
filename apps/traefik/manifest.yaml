@@ -31,8 +31,7 @@ spec:
       # skipCrds: true
       valuesObject:
         deployment:
-          labels:
-            - prometheus.io/scrap-with: kube-prometheus-stack
+          labels: { prometheus.io/scrap-with: kube-prometheus-stack }
 
   destination:
     server: "https://kubernetes.default.svc"
