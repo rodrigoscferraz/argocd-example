@@ -3,3 +3,4 @@ resources:
   - default/nginx-application/manifest.yaml
   - monitoring/kube-prometheus-stack/manifest.yaml
   - data/manifest.yaml
+  - traefik/manifest.yaml
