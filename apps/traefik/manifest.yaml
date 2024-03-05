@@ -51,3 +51,27 @@ spec:
   destination:
     server: "https://kubernetes.default.svc"
     namespace: traefik
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik-ingress
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    name: ""
+    namespace: traefik
+    server: "https://kubernetes.default.svc"
+  source:
+    path: base/traefik
+    repoURL: "https://github.com/rodrigoscferraz/argocd-gitops"
+    targetRevision: HEAD
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
