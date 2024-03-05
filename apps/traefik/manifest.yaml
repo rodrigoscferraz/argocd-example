@@ -33,6 +33,8 @@ spec:
         deployment:
           labels:
             prometheus.io/scrap-with: kube-prometheus-stack
+          podLabels:
+            prometheus.io/scrap-with: kube-prometheus-stack
         logs:
           general:
             level: DEBUG
