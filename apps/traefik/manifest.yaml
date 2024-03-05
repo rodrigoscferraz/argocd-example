@@ -85,6 +85,8 @@ spec:
               jobLabel: traefik
               interval: 30s
               honorLabels: true
+              additionalLabels:
+                prometheus.io/scrap-with: kube-prometheus-stack
 
   destination:
     server: "https://kubernetes.default.svc"
