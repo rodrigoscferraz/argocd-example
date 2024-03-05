@@ -37,16 +37,16 @@ spec:
           general:
             level: DEBUG
         ingressRoute:
-        dashboard:
-          # -- Create an IngressRoute for the dashboard
-          enabled: true
-          # -- Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)
-          annotations: {}
-          # -- Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)
-          labels: {}
-          # -- The router match rule used for the dashboard ingressRoute
-          matchRule: Host(`localhost`) && PathPrefix(`/dashboard`) || PathPrefix(`/api`)
-          entryPoints: ["web"]
+          dashboard:
+            # -- Create an IngressRoute for the dashboard
+            enabled: true
+            # -- Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)
+            annotations: {}
+            # -- Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)
+            labels: {}
+            # -- The router match rule used for the dashboard ingressRoute
+            matchRule: Host(`localhost`) && PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+            entryPoints: ["web"]
 
         ports:
           # The name of this one can't be changed as it is used for the readiness and
