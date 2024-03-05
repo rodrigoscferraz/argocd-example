@@ -77,7 +77,7 @@ spec:
             # -- You may not want to expose the metrics port on production deployments.
             # If you want to access it from outside your cluster,
             # use `kubectl port-forward` or create a secure ingress
-            expose: false
+            expose: true
             # -- The exposed port for this service
             exposedPort: 9001
             # -- The port protocol (TCP/UDP)
