@@ -110,7 +110,6 @@ spec:
             prometheusRule:
               additionalLabels:
                 prometheus.io/scrap-with: kube-prometheus-stack
-              namespace: "another-namespace"
               rules:
                 - alert: TraefikDown
                   expr: up{job="traefik"} == 0
