@@ -45,8 +45,8 @@ spec:
           # -- Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)
           labels: {}
           # -- The router match rule used for the dashboard ingressRoute
-          matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
-          entryPoints: ["traefik", "web"]
+          matchRule: Host(`localhost`) && PathPrefix(`/dashboard`) || PathPrefix(`/api`)
+          entryPoints: ["web"]
 
         ports:
           # The name of this one can't be changed as it is used for the readiness and
