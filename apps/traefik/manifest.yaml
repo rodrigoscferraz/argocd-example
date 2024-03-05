@@ -48,30 +48,23 @@ spec:
           matchRule: PathPrefix(`/dashboard`) || PathPrefix(`/api`)
           entryPoints: ["traefik", "web"]
 
+        ports:
+          # The name of this one can't be changed as it is used for the readiness and
+          # liveness probes, but you can adjust its config to your liking
+          traefik:
+            port: 9000
+            expose: true
+            # The exposed port for this service
+            exposedPort: 9000
+            # The port protocol (TCP/UDP)
+            protocol: TCP
+
+            #
+            # Things that I felt more comfortable setting via the CLI
+            #
+            additionalArguments:
+              - "--api.insecure=true"
+
   destination:
     server: "https://kubernetes.default.svc"
     namespace: traefik
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: traefik-ingress
-  finalizers:
-    - resources-finalizer.argocd.argoproj.io
-spec:
-  destination:
-    name: ""
-    namespace: traefik
-    server: "https://kubernetes.default.svc"
-  source:
-    path: base/traefik
-    repoURL: "https://github.com/rodrigoscferraz/argocd-gitops"
-    targetRevision: HEAD
-  project: default
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
-      - PrunePropagationPolicy=foreground
