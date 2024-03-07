@@ -3,7 +3,9 @@ kind: Deployment
 metadata:
   name: argocd-server
 spec:
-  containers:
-    - argocd-server
-    - --rootpath
-    - /argocd
+  template:
+    spec:
+      containers:
+        - argocd-server
+        - --rootpath
+        - /argocd
