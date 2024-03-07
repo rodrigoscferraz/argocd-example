@@ -5,3 +5,5 @@ metadata:
 data:
   # disable TLS on argocd
   server.insecure: "true"
+  # serve argo on a subpath
+  server.rootpath: /argocd
