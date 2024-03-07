@@ -6,3 +6,4 @@ resources:
 ## changes to config maps
 patches:
   - path: infra/argocd/overlays/argocd-cmd-params-cm.yaml
+  - path: infra/argocd/overlays/argocd-server-deployment.yaml
