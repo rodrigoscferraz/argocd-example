@@ -179,6 +179,7 @@ spec:
             prometheusSpec:
               externalUrl: http://localhost:8080/prometheus
               routePrefix: /
+              loglevel: debug
               retention: "30d"
               storageSpec:
                 volumeClaimTemplate:
