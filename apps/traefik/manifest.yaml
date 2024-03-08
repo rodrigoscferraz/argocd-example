@@ -38,6 +38,8 @@ spec:
         logs:
           general:
             level: DEBUG
+          access:
+            enabled: true
         ingressRoute:
           dashboard:
             # -- Create an IngressRoute for the dashboard
