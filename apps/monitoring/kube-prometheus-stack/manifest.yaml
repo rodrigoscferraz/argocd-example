@@ -177,7 +177,7 @@ spec:
             #     - prometheus${ARGOCD_ENV_DNS_ENV}.${ARGOCD_ENV_DNS_DOMAIN}
 
             prometheusSpec:
-              externalUrl: http://localhost/prometheus
+              externalUrl: http://localhost:8080/prometheus
               routePrefix: /
               retention: "30d"
               storageSpec:
