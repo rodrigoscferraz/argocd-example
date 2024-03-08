@@ -178,7 +178,7 @@ spec:
 
             prometheusSpec:
               externalUrl: http://localhost/prometheus
-              routePrefix: /prometheus/
+              # routePrefix: /prometheus/
               retention: "30d"
               storageSpec:
                 volumeClaimTemplate:
