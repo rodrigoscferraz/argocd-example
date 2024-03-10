@@ -30,6 +30,9 @@ spec:
     helm:
       # skipCrds: true
       valuesObject:
+        podAnnotations:
+          prometheus.io/port: "8082"
+          prometheus.io/scrape: "true"
         deployment:
           labels:
             prometheus.io/scrap-with: kube-prometheus-stack
