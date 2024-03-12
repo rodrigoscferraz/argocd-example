@@ -33,6 +33,7 @@ spec:
         podAnnotations:
           prometheus.io/port: "8082"
           prometheus.io/scrape: "true"
+          prometheus.io/scrap-with: kube-prometheus-stack
         deployment:
           labels:
             prometheus.io/scrap-with: kube-prometheus-stack
