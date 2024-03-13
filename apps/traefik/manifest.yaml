@@ -130,6 +130,8 @@ spec:
                     description: "{{ $labels.pod }} on {{ $labels.nodename }} is down"
         service:
           annotations:
+            prometheus.io/port: "9001"
+            prometheus.io/scrape: "true"
             prometheus.io/scrap-with: kube-prometheus-stack
 
   destination:
