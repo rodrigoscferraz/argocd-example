@@ -31,14 +31,14 @@ spec:
       # skipCrds: true
       valuesObject:
         podAnnotations:
-          prometheus.io/port: "8082"
+          prometheus.io/port: "9001"
           prometheus.io/scrape: "true"
           prometheus.io/scrap-with: kube-prometheus-stack
         deployment:
           labels:
             prometheus.io/scrap-with: kube-prometheus-stack
           podLabels:
-            prometheus.io/port: "8082"
+            prometheus.io/port: "9001"
             prometheus.io/scrape: "true"
             prometheus.io/scrap-with: kube-prometheus-stack
         logs:
