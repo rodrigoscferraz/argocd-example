@@ -38,6 +38,8 @@ spec:
           labels:
             prometheus.io/scrap-with: kube-prometheus-stack
           podLabels:
+            prometheus.io/port: "8082"
+            prometheus.io/scrape: "true"
             prometheus.io/scrap-with: kube-prometheus-stack
         logs:
           general:
