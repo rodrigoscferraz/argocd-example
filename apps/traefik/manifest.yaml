@@ -96,6 +96,8 @@ spec:
             exposeInternal: false
         metrics:
           prometheus:
+            addEntryPointsLabels: true
+            addServicesLabels: true
             serviceMonitor:
               metricRelabelings:
                 - sourceLabels: [__name__]
