@@ -105,13 +105,37 @@ spec:
               #     regex: ^fluentd_output_status_buffer_(oldest|newest)_.+
               #     replacement: $1
               #     action: drop
-              # relabelings:
-              #   - sourceLabels: [__meta_kubernetes_pod_node_name]
-              #     separator: ;
-              #     regex: ^(.*)$
-              #     targetLabel: nodename
-              #     replacement: $1
-              #     action: replace
+              relabelings:
+                - sourceLabels: [__meta_kubernetes_pod_node_name]
+                  separator: ;
+                  regex: ^(.*)$
+                  targetLabel: nodename
+                  replacement: $1
+                  action: replace
+                - sourceLabels: [__meta_kubernetes_name]
+                  separator: ;
+                  regex: ^(.*)$
+                  targetLabel: pod
+                  replacement: $1
+                  action: replace
+                - sourceLabels: [__meta_kubernetes_namespace]
+                  separator: ;
+                  regex: ^(.*)$
+                  targetLabel: namespace
+                  replacement: $1
+                  action: replace
+                - sourceLabels: [__adress__]
+                  separator: :
+                  regex: ^(.*)$
+                  targetLabel: instance
+                  replacement: $1
+                  action: replace
+                - sourceLabels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
+                  separator: :
+                  regex: ^(.*)$
+                  targetLabel: job
+                  replacement: $1
+                  action: replace
               jobLabel: traefik
               interval: 30s
               honorLabels: false
