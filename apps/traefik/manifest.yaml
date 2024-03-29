@@ -119,12 +119,13 @@ spec:
                   replacement: $1
                   action: replace
                 - sourceLabels: [__adress__]
-                  separator: :
+                  separator: ;
                   regex: ^(.*)$
                   targetLabel: instance
                   replacement: $1
                   action: replace
-                - sourceLabels: [__meta_kubernetes_service_label_app_kubernetes_io_name]
+                - sourceLabels:
+                    [__meta_kubernetes_service_label_app_kubernetes_io_name]
                   separator: ;
                   regex: ^(.*)$
                   targetLabel: job
