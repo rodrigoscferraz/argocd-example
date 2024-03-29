@@ -99,12 +99,6 @@ spec:
             addEntryPointsLabels: true
             addServicesLabels: true
             serviceMonitor:
-              # metricRelabelings:
-              #   - sourceLabels: [__name__]
-              #     separator: ;
-              #     regex: ^fluentd_output_status_buffer_(oldest|newest)_.+
-              #     replacement: $1
-              #     action: drop
               relabelings:
                 - sourceLabels: [__meta_kubernetes_pod_node_name]
                   separator: ;
