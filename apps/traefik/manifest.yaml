@@ -30,10 +30,6 @@ spec:
     helm:
       # skipCrds: true
       valuesObject:
-        podAnnotations:
-          prometheus.io/port: "9001"
-          prometheus.io/scrape: "true"
-          prometheus.io/scrap-with: kube-prometheus-stack
         deployment:
           labels:
             prometheus.io/scrap-with: kube-prometheus-stack
@@ -149,17 +145,13 @@ spec:
                   annotations:
                     summary: "Traefik Down"
                     description: "{{ $labels.pod }} on {{ $labels.nodename }} is down"
-            # service:
-            #   enabled: true
+            service:
+              enabled: true
+              labels:
+                prometheus.io/scrap-with: kube-prometheus-stack
 
         service:
-          annotations:
-            prometheus.io/port: "9001"
-            prometheus.io/scrape: "true"
-            prometheus.io/scrap-with: kube-prometheus-stack
           labels:
-            prometheus.io/port: "9001"
-            prometheus.io/scrape: "true"
             prometheus.io/scrap-with: kube-prometheus-stack
 
   destination:
