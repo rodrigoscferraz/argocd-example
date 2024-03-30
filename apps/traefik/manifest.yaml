@@ -154,8 +154,8 @@ spec:
           labels:
             prometheus.io/scrap-with: kube-prometheus-stack
 
+        instanceLabelOverride: traefik
+
   destination:
     server: "https://kubernetes.default.svc"
     namespace: traefik
-
-  instanceLabelOverride: traefik
