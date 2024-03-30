@@ -149,8 +149,15 @@ spec:
                   annotations:
                     summary: "Traefik Down"
                     description: "{{ $labels.pod }} on {{ $labels.nodename }} is down"
+            # service:
+            #   enabled: true
+
         service:
           annotations:
+            prometheus.io/port: "9001"
+            prometheus.io/scrape: "true"
+            prometheus.io/scrap-with: kube-prometheus-stack
+          labels:
             prometheus.io/port: "9001"
             prometheus.io/scrape: "true"
             prometheus.io/scrap-with: kube-prometheus-stack
